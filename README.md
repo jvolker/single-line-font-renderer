@@ -4,17 +4,18 @@
 
 This web based tool renders and exports text in SVG format intended for CNC machines like pen plotters or laser engravers.
 
-These machines require a different single line font type than the more commonly used outline fonts (eg. TTF/OTF) which are mainly intended for screens and printing.
-More on this topic in this [article](https://www.evilmadscientist.com/2011/hershey-text-an-inkscape-extension-for-engraving-fonts/).
+These machines require a different single line font type than the more commonly used outline fonts (eg. TTF/OTF) which are mainly intended for screens and printing. More on this topic in this [article](https://www.evilmadscientist.com/2011/hershey-text-an-inkscape-extension-for-engraving-fonts/).
 
 This tool is an attempt to create a browser based alternative to the excellent [Hershey Text Extension for Inkscape](https://wiki.evilmadscientist.com/Hershey_Text) by Evil Mad Scientist. 
 
-Advantages of using this in a web browser over using Inkscape:
+[**CHECK IT OUT HERE**](https://jvolker.github.io/svg-font-renderer/)
+
+**Advantages** of using this in a web browser over using Inkscape:
 - simplified user interface
 - doesn't require any installation or extension to be installed
 - always uses the latest version of SVG fonts available
 
-Disadvantages:
+**Disadvantages:**
 - the feature set of this tool is currently more limited
 
 ## Export and usage
@@ -34,8 +35,8 @@ This tool uses the latest fonts straight from that repository. Please contribute
 
 ## Acknowledgement
 
-The rendering core is heavily borrowed from: https://github.com/techninja/hersheytextjs
-Thanks to [Evi Mad Scientist](https://www.evilmadscientist.com/) for their pioneering work in this field.
+The rendering core is heavily borrowed from: https://github.com/techninja/hersheytextjs  
+Thanks to [Evil Mad Scientist](https://www.evilmadscientist.com/) for their pioneering work in this field.
 
 ## Development
 

@@ -95,6 +95,13 @@
           target="_blank"
           >Improve these fonts</v-btn
         >
+        <v-btn
+          block
+          plain
+          href="https://github.com/jvolker/svg-font-renderer"
+          target="_blank"
+          >Improve this tool</v-btn
+        >
       </template>
     </v-navigation-drawer>
     <v-content>
