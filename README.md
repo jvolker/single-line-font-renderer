@@ -18,6 +18,14 @@ This tool is an attempt to create a browser based alternative to the excellent [
 **Disadvantages:**
 - the feature set of this tool is currently more limited
 
+**Feature ideas:**
+[ ] smoothing
+[ ] line breaks
+[ ] import local svg font files
+[ ] add support for otf/ttf files: some single-line fonts are set in these types and hard to use in other software
+[ ] text area: words wrap to new line when longer than a certain length
+[ ] alignment: center and right
+
 ## Export and usage
 
 The tool exports SVGs to be used and rearranged in a vector/graphic design software like Adobe Illustrator. 
