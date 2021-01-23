@@ -11,6 +11,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "axios-cache-adapter": "^2.5.0",
+    "cheerio": "^1.0.0-rc.5",
     "core-js": "^3.6.5",
     "vue": "^2.6.11",
     "vuetify": "^2.2.11"
