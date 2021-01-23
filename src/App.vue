@@ -12,7 +12,7 @@
 
       <v-divider></v-divider>
 
-      <v-list nav dense>
+      <v-list >
         <v-list-item>
           <v-list-item-content>
             <v-textarea
@@ -20,11 +20,8 @@
               label="Input text"
               v-model="text"
               @input="render"
+              outlined
             ></v-textarea>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item>
-          <v-list-item-content>
             <v-select
               :items="fonts"
               item-text="displayName"
@@ -32,57 +29,50 @@
               dense
               v-model="selectedFontName"
               @input="selectFont"
+              
             ></v-select>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item>
-          <v-list-item-content>
-            <v-slider
-              label="Font Scale"
-              @input="setFontScale"
-              v-model="fontScale"
-              step="0.01"
-              max="1"
-              min="0.01"
-            >
-              <template v-slot:append>
-                <v-text-field
-                  v-model="fontScale"
-                  class="mt-0 pt-0"
-                  type="number"
-                  step="0.01"
-                  style="width: 45px"
-                ></v-text-field>
-              </template>
-            </v-slider>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item>
-          <v-list-item-content>
-            <v-slider
-              label="Stroke width"
-              @input="setStrokeWeight"
-              v-model="strokeWeight"
-              step="0.1"
-              max="50"
-              min="0.05"
-            >
-              <template v-slot:append>
-                <v-text-field
-                  v-model="strokeWeight"
-                  class="mt-0 pt-0"
-                  type="number"
-                  style="width: 45px"
-                ></v-text-field>
-              </template>
-            </v-slider>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item>
-          <v-list-item-content>
+            <div>
+              <v-subheader>Font Scale</v-subheader>
+              <v-slider
+                @input="setFontScale"
+                v-model="fontScale"
+                step="0.01"
+                max="1"
+                min="0.01"
+                block
+              >
+                <template v-slot:append>
+                  <v-text-field
+                    v-model="fontScale"
+                    class="mt-0 pt-0"
+                    type="number"
+                    step="0.01"
+                    style="width: 45px"
+                    dense
+                  ></v-text-field>
+                </template>
+              </v-slider>
+            </div>
+            <div>
+              <v-subheader>Stroke width</v-subheader>
+              <v-slider
+                @input="setStrokeWeight"
+                v-model="strokeWeight"
+                step="0.1"
+                max="50"
+                min="0.05"
+              >
+                <template v-slot:append>
+                  <v-text-field
+                    v-model="strokeWeight"
+                    class="mt-0 pt-0"
+                    type="number"
+                    style="width: 45px"
+                    dense
+                  ></v-text-field>
+                </template>
+              </v-slider>
+            </div>
             <v-btn block elevation="2" @click="exportSVG">Download SVG</v-btn>
           </v-list-item-content>
         </v-list-item>
@@ -264,17 +254,15 @@ export default {
 </script>
 
 
-<style scoped>
->>> label.v-label {
-  font-size: 12px;
-}
+<style>
+  
+  div.v-subheader {
+    padding: 0;
+    height: 8px;
+    font-size: 12px;
+  }
 
->>> .v-text-field {
-  padding-top: 16px;
-}
-
->>> .v-text-field label.v-label {
-  font-size: 16px;
-  /* top:-4px; */
-}
+  div.v-slider--horizontal {
+    margin-left: 0;
+  }
 </style>
