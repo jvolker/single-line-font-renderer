@@ -12,7 +12,7 @@
 
       <v-divider></v-divider>
 
-      <v-list >
+      <v-list>
         <v-list-item>
           <v-list-item-content>
             <v-textarea
@@ -29,7 +29,6 @@
               dense
               v-model="selectedFontName"
               @input="selectFont"
-              
             ></v-select>
             <div>
               <v-subheader>Font Scale</v-subheader>
@@ -78,24 +77,30 @@
         </v-list-item>
       </v-list>
       <template v-slot:append>
+        <v-divider></v-divider>
         <v-btn
-          block
+          large
           plain
           href="https://gitlab.com/oskay/svg-fonts"
           target="_blank"
-          >Improve these fonts</v-btn
+          ><v-icon left> mdi-pencil </v-icon>Improve these fonts</v-btn
         >
         <v-btn
-          block
+          large
           plain
           href="https://github.com/jvolker/svg-font-renderer"
           target="_blank"
-          >Improve this tool</v-btn
+          ><v-icon left> mdi-pencil </v-icon>Improve this tool</v-btn
         >
       </template>
     </v-navigation-drawer>
-    <v-content>
-      <v-container ref="svgWrapper" v-html="renderedSVG"></v-container>
+    <v-content
+      ><v-container fill-height fluid>
+        <v-row align="center" justify="center">
+          <v-col>
+            <div ref="svgWrapper" v-html="renderedSVG"></div>
+          </v-col> </v-row
+      ></v-container>
     </v-content>
   </v-app>
 </template>
@@ -255,14 +260,13 @@ export default {
 
 
 <style>
-  
-  div.v-subheader {
-    padding: 0;
-    height: 8px;
-    font-size: 12px;
-  }
+div.v-subheader {
+  padding: 0;
+  height: 8px;
+  font-size: 12px;
+}
 
-  div.v-slider--horizontal {
-    margin-left: 0;
-  }
+div.v-slider--horizontal {
+  margin-left: 0;
+}
 </style>
