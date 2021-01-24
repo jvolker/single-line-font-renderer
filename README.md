@@ -13,10 +13,10 @@ This tool is an attempt to create a browser based alternative to the excellent [
 **Features:**
 - uses latest fonts from the [SVG fonts repository](https://gitlab.com/oskay/svg-fonts)
 - adjust font scale and stroke width 
+- smoothing/simplification (this is experimental: the results from Inkscape are better in some cases)
 - export as SVG file
 
 **Ideas for furture features:**
-- [ ] smoothing
 - [ ] line breaks
 - [ ] import local svg font files
 - [ ] support for otf/ttf files: some single-line fonts are set in these types and hard to use in other software
