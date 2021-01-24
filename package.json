@@ -13,6 +13,7 @@
     "axios-cache-adapter": "2.5.0",
     "cheerio": "1.0.0-rc.5",
     "core-js": "3.8.3",
+    "paper": "0.12.11",
     "vue": "2.6.12",
     "vuetify": "2.4.3"
   },

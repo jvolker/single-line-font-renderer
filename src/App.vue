@@ -30,14 +30,15 @@
               v-model="selectedFontName"
               @input="selectFont"
             ></v-select>
+
             <div>
-              <v-subheader>Font Scale</v-subheader>
+              <v-subheader>Scale</v-subheader>
               <v-slider
-                @input="setFontScale"
+                @input="applyFontScale"
                 v-model="fontScale"
                 step="0.01"
-                max="1"
-                min="0.01"
+                max="10"
+                min="0.1"
                 block
               >
                 <template v-slot:append>
@@ -55,11 +56,11 @@
             <div>
               <v-subheader>Stroke width</v-subheader>
               <v-slider
-                @input="setStrokeWeight"
+                @input="applyStrokeWeight"
                 v-model="strokeWeight"
-                step="0.1"
-                max="50"
-                min="0.05"
+                step="0.01"
+                max="20"
+                min="0.1"
               >
                 <template v-slot:append>
                   <v-text-field
@@ -72,6 +73,74 @@
                 </template>
               </v-slider>
             </div>
+            <div>
+              <v-checkbox
+                @change="applyFontSettings(true)"
+                v-model="enableFontSimplification"
+                label="Simplification"
+                dense
+                class="ma-0"
+              ></v-checkbox>
+              <div v-if="enableFontSimplification">
+                <v-subheader>Simplification Deviation</v-subheader>
+                <v-slider
+                  @input="applyFontSettings(true)"
+                  v-model="simplifyFactor"
+                  step="1"
+                  max="30"
+                  min="0"
+                >
+                  <template v-slot:append>
+                    <v-text-field
+                      v-model="simplifyFactor"
+                      class="mt-0 pt-0"
+                      type="number"
+                      style="width: 45px"
+                      dense
+                    ></v-text-field>
+                  </template>
+                </v-slider>
+              </div>
+            </div>
+            <div>
+              <v-checkbox
+                @change="applyFontSettings(true)"
+                v-model="enableFontSmoothing"
+                label="Smoothing"
+                dense
+                class="ma-0"
+              ></v-checkbox>
+
+              <v-select
+                v-if="enableFontSmoothing"
+                @input="applyFontSettings(true)"
+                :items="smoothingTypes"
+                label="Smoothing Type"
+                v-model="smoothingType"
+              ></v-select>
+
+              <div v-if="enableFontSmoothing && smoothingType == 'catmull-rom'">
+                <v-subheader>Smoothing amount</v-subheader>
+                <v-slider
+                  @input="applyFontSettings(true)"
+                  v-model="smoothingFactor"
+                  step="0.01"
+                  max="1"
+                  min="0.01"
+                >
+                  <template v-slot:append>
+                    <v-text-field
+                      v-model="smoothingFactor"
+                      class="mt-0 pt-0"
+                      type="number"
+                      style="width: 45px"
+                      dense
+                    ></v-text-field>
+                  </template>
+                </v-slider>
+              </div>
+            </div>
+
             <v-btn block elevation="2" @click="exportSVG">Download SVG</v-btn>
           </v-list-item-content>
         </v-list-item>
@@ -98,7 +167,15 @@
       ><v-container fill-height fluid>
         <v-row align="center" justify="center">
           <v-col>
-            <div ref="svgWrapper" v-html="renderedSVG"></div>
+            <svg
+              ref="svg"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+              version="1.1"
+              v-html="displayedSvgContent"
+              :width="svgWidth"
+              :height="svgHeight"
+            ></svg>
           </v-col> </v-row
       ></v-container>
     </v-content>
@@ -109,6 +186,7 @@
 import _axios from "axios";
 import { setupCache } from "axios-cache-adapter";
 import svgFontRenderer from "./lib/svgFontRenderer";
+import paper from "paper";
 
 // Create `axios-cache-adapter` instance
 const cache = setupCache({
@@ -131,9 +209,21 @@ export default {
     return {
       fonts: [],
       selectedFontName: null,
-      strokeWeight: 20,
-      fontScale: 0.1,
+      strokeWeight: 1,
+      fontScale: 1,
+      enableFontSimplification: false,
+      simplifyFactor: 10,
+      enableFontSmoothing: false,
+      smoothingTypes: ["catmull-rom", "geometric", "continuous", "asymmetric"],
+      smoothingType: "catmull-rom",
+      smoothingFactor: 0.5,
       right: null,
+      rawSvgContent: null,
+      displayedSvgContent: null,
+      svgWidth: null,
+      svgHeight: null,
+      rawSVGWidth: null,
+      rawSVGHeight: null,
       text:
         "The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through.",
       renderedSVG: null,
@@ -170,7 +260,7 @@ export default {
                 basePath: basePath,
               };
             })
-            .filter((font) => font.fileName.endsWith('.svg'));
+            .filter((font) => font.fileName.endsWith(".svg"));
           component.fonts = [...component.fonts, ...receivedFonts];
         });
       }
@@ -191,56 +281,97 @@ export default {
         .then(this.render);
     },
     render() {
-      const svgContent = svgFontRenderer.renderTextSVG(this.text, {
-        font: this.selectedFont.fontName,
-        scale: 0.1,
-      });
-
-      const header =
-        '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" >';
-      const footer = "</svg>";
-      this.renderedSVG = `${header}\n${svgContent}\n${footer}`;
-
-      this.$nextTick(() => {
-        // wait for next tick when svg has rendered
-        this.setStrokeWeight();
-        this.setFontScale();
-        this.resizeSVG();
-      });
-    },
-    getSvgElement: function () {
-      return this.$refs.svgWrapper.firstChild;
-    },
-    setFontScale() {
-      if (!this.getSvgElement()) return;
-      const pathWrapper = this.getSvgElement().getElementById("text");
-      pathWrapper.setAttribute("transform", `scale(${this.fontScale})`);
-
-      this.resizeSVG();
-    },
-    setStrokeWeight() {
-      const paths = this.getSvgElement().getElementsByTagName("path");
-      paths.forEach((path) =>
-        path.setAttribute("stroke-width", this.strokeWeight)
+      this.displayedSvgContent = this.rawSvgContent = svgFontRenderer.renderTextSVG(
+        this.text,
+        {
+          font: this.selectedFont.fontName,
+          scale: 0.1,
+        }
       );
+
+      this.getSVGSize(true);
+
+      // wait for next tick when svg has rendered
+      this.$nextTick(() => {
+        this.applyFontSettings();
+      });
     },
-    resizeSVG() {
-      // Get the bounds of the SVG content
-      const svgElement = this.getSvgElement();
-      const bbox = svgElement.getBBox();
+    applyFontSettings(triggerSmoothing = true) {
+      // console.log("applyFontSettings")
+      const applyDomSettings = () => {
+        this.applyStrokeWeight();
+        this.applyFontScale();
+      };
+      if (triggerSmoothing) this.smoothFont(applyDomSettings);
+      else applyDomSettings();
+    },
+    applyFontScale() {
+      if (!this.$refs.svg) return;
+
+      const fontWrapper = this.$refs.svg.firstChild;
+      fontWrapper.setAttribute("transform", `scale(${this.fontScale})`);
+
+      this.getSVGSize();
+    },
+    applyStrokeWeight() {
+      if (!this.$refs.svg) return;
+      const fontWrapper = this.$refs.svg.firstChild;
+      fontWrapper.setAttribute("stroke-width", this.strokeWeight);
+    },
+    getSVGSize(raw = false) {
+      const bbox = this.$refs.svg.getBBox();
 
       // Update the width and height using the size of the contents
-      const svgWidth = bbox.x + bbox.width + bbox.x;
-      const svgHeight = bbox.y + bbox.height + bbox.y;
+      this.svgWidth = Math.ceil(bbox.x + bbox.width + bbox.x);
+      this.svgHeight = Math.ceil(bbox.y + bbox.height + bbox.y);
+      if (raw) {
+        this.rawSVGWidth = this.svgWidth;
+        this.rawSVGHeight = this.svgHeight;
+      }
+    },
+    smoothFont(callback) {
+      // console.log("smooth font")
+      if (
+        !this.rawSVGWidth ||
+        !this.rawSVGHeight ||
+        this.rawSVGWidth == 0 ||
+        this.rawSVGHeight == 0
+      )
+        return;
 
-      svgElement.setAttribute("width", svgWidth);
-      svgElement.setAttribute("height", svgHeight);
+      // feeding the svg into another engine might be slow especially with large text ??
+      paper.setup([this.rawSVGWidth, this.rawSVGHeight]);
 
-      // console.log(this.svgElement)
+      const header = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" >`;
+      const footer = "</svg>";
+
+      // console.log(this.rawSvgContent);
+      paper.project.importSVG(
+        `${header}\n${this.rawSvgContent}\n${footer}`,
+        (item) => {
+          if (!this.enableFontSimplification && !this.enableFontSmoothing) return;
+
+          const letterPaths = item.children[0].children[0].children;
+
+          letterPaths.forEach((path) => {
+            if (this.enableFontSimplification) path.simplify(this.simplifyFactor);
+            if (this.enableFontSmoothing) path.smooth({
+              type: this.smoothingType,
+              factor: this.smoothingFactor,
+            });
+          });
+        }
+      );
+
+      this.displayedSvgContent = paper.project.exportSVG().innerHTML;
+
+      this.$nextTick(() => {
+        if (callback) callback();
+      });
     },
     exportSVG() {
       console.log("export svg");
-      const string = this.$refs.svgWrapper.firstChild.outerHTML; // raw svg
+      const string = this.$refs.svg.outerHTML; // raw svg
       if (!string) return;
       const blob = new Blob([string], { type: "image/svg+xml;charset=utf-8" });
       const url = window.URL.createObjectURL(blob);
