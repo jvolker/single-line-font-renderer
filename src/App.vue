@@ -164,7 +164,7 @@
       </template>
     </v-navigation-drawer>
     <v-content
-      ><v-container fill-height fluid>
+      ><v-container fill-height fluid id="svgWrapper">
         <v-row align="center" justify="center">
           <v-col>
             <svg
@@ -401,5 +401,9 @@ div.v-subheader {
 
 div.v-slider--horizontal {
   margin-left: 0;
+}
+
+#svgWrapper {
+  overflow: scroll;
 }
 </style>
