@@ -162,13 +162,15 @@ export default {
       async function getFontList(basePath) {
         const url = `https://gitlab.com/api/v4/projects/12941474/repository/tree?path=${basePath}&per_page=100`;
         await axios.get(url).then((response) => {
-            const receivedFonts = response.data.map((font) => {
-            return {
-              fileName: font.name,
-              displayName: font.name.replace(".svg", ""),
-              basePath: basePath,
-            };
-          });
+          const receivedFonts = response.data
+            .map((file) => {
+              return {
+                fileName: file.name,
+                displayName: file.name.replace(".svg", ""),
+                basePath: basePath,
+              };
+            })
+            .filter((font) => font.fileName.endsWith('.svg'));
           component.fonts = [...component.fonts, ...receivedFonts];
         });
       }
