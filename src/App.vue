@@ -76,6 +76,35 @@
             <div>
               <v-checkbox
                 @change="applyFontSettings(true)"
+                v-model="enableFontSimplification"
+                label="Simplification"
+                dense
+                class="ma-0"
+              ></v-checkbox>
+              <div v-if="enableFontSimplification">
+                <v-subheader>Simplification Deviation</v-subheader>
+                <v-slider
+                  @input="applyFontSettings(true)"
+                  v-model="simplifyFactor"
+                  step="1"
+                  max="30"
+                  min="0"
+                >
+                  <template v-slot:append>
+                    <v-text-field
+                      v-model="simplifyFactor"
+                      class="mt-0 pt-0"
+                      type="number"
+                      style="width: 45px"
+                      dense
+                    ></v-text-field>
+                  </template>
+                </v-slider>
+              </div>
+            </div>
+            <div>
+              <v-checkbox
+                @change="applyFontSettings(true)"
                 v-model="enableFontSmoothing"
                 label="Smoothing"
                 dense
@@ -111,6 +140,7 @@
                 </v-slider>
               </div>
             </div>
+
             <v-btn block elevation="2" @click="exportSVG">Download SVG</v-btn>
           </v-list-item-content>
         </v-list-item>
@@ -181,6 +211,8 @@ export default {
       selectedFontName: null,
       strokeWeight: 1,
       fontScale: 1,
+      enableFontSimplification: false,
+      simplifyFactor: 10,
       enableFontSmoothing: false,
       smoothingTypes: ["catmull-rom", "geometric", "continuous", "asymmetric"],
       smoothingType: "catmull-rom",
@@ -317,12 +349,13 @@ export default {
       paper.project.importSVG(
         `${header}\n${this.rawSvgContent}\n${footer}`,
         (item) => {
-          if (!this.enableFontSmoothing) return;
+          if (!this.enableFontSimplification && !this.enableFontSmoothing) return;
 
           const letterPaths = item.children[0].children[0].children;
 
           letterPaths.forEach((path) => {
-            path.smooth({
+            if (this.enableFontSimplification) path.simplify(this.simplifyFactor);
+            if (this.enableFontSmoothing) path.smooth({
               type: this.smoothingType,
               factor: this.smoothingFactor,
             });
