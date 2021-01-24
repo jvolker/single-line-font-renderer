@@ -6,23 +6,20 @@ This web based tool renders and exports text in SVG format intended for CNC mach
 
 These machines require a different single line font type than the more commonly used outline fonts (eg. TTF/OTF) which are mainly intended for screens and printing. More on this topic in this [article](https://www.evilmadscientist.com/2011/hershey-text-an-inkscape-extension-for-engraving-fonts/).
 
-This tool is an attempt to create a browser based alternative to the excellent [Hershey Text Extension for Inkscape](https://wiki.evilmadscientist.com/Hershey_Text) by Evil Mad Scientist. 
+This tool is an attempt to create a browser based alternative to the excellent [Hershey Text Extension for Inkscape](https://wiki.evilmadscientist.com/Hershey_Text) by Evil Mad Scientist. It has a simplified interface and doesn't require installation. On the other hand its feature set is currently more limited.
 
 [**CHECK IT OUT HERE**](https://jvolker.github.io/svg-font-renderer/)
 
-**Advantages** of using this in a web browser over using Inkscape:
-- simplified user interface
-- doesn't require any installation or extension to be installed
-- always uses the latest version of SVG fonts available
+**Features:**
+- uses latest fonts from the [SVG fonts repository](https://gitlab.com/oskay/svg-fonts)
+- adjust font scale and stroke width 
+- export as SVG file
 
-**Disadvantages:**
-- the feature set of this tool is currently more limited
-
-**Feature ideas:**
+**Ideas for furture features:**
 [ ] smoothing
 [ ] line breaks
 [ ] import local svg font files
-[ ] add support for otf/ttf files: some single-line fonts are set in these types and hard to use in other software
+[ ] support for otf/ttf files: some single-line fonts are set in these types and hard to use in other software
 [ ] text area: words wrap to new line when longer than a certain length
 [ ] alignment: center and right
 
