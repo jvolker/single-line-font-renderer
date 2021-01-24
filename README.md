@@ -8,9 +8,9 @@ These machines require a different single line font type than the more commonly 
 
 This tool is an attempt to create a browser based alternative to the excellent [Hershey Text Extension for Inkscape](https://wiki.evilmadscientist.com/Hershey_Text) by Evil Mad Scientist. It has a simplified interface and doesn't require installation. On the other hand its feature set is currently more limited.
 
-<img width="1136" alt="Screenshot 2021-01-24 at 18 31 48" src="https://user-images.githubusercontent.com/546852/105638363-85436000-5e72-11eb-801a-60d2b2ce9a65.png">
-
 [**>> CHECK IT OUT HERE <<**](https://jvolker.github.io/svg-font-renderer/)
+
+<img width="1136" alt="Screenshot 2021-01-24 at 18 31 48" src="https://user-images.githubusercontent.com/546852/105638363-85436000-5e72-11eb-801a-60d2b2ce9a65.png">
 
 **Features:**
 - uses latest fonts from the [SVG fonts repository](https://gitlab.com/oskay/svg-fonts)
