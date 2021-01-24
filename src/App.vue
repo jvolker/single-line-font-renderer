@@ -72,6 +72,27 @@
                 </template>
               </v-slider>
             </div>
+            <div>
+              <v-subheader>Font smoothing</v-subheader>
+
+              <!-- <v-slider
+                @input="setStrokeWeight"
+                v-model="strokeWeight"
+                step="0.1"
+                max="50"
+                min="0.05"
+              >
+                <template v-slot:append>
+                  <v-text-field
+                    v-model="strokeWeight"
+                    class="mt-0 pt-0"
+                    type="number"
+                    style="width: 45px"
+                    dense
+                  ></v-text-field>
+                </template>
+              </v-slider> -->
+            </div>
             <v-btn block elevation="2" @click="exportSVG">Download SVG</v-btn>
           </v-list-item-content>
         </v-list-item>
@@ -109,6 +130,7 @@
 import _axios from "axios";
 import { setupCache } from "axios-cache-adapter";
 import svgFontRenderer from "./lib/svgFontRenderer";
+import paper from "paper";
 
 // Create `axios-cache-adapter` instance
 const cache = setupCache({
@@ -170,7 +192,7 @@ export default {
                 basePath: basePath,
               };
             })
-            .filter((font) => font.fileName.endsWith('.svg'));
+            .filter((font) => font.fileName.endsWith(".svg"));
           component.fonts = [...component.fonts, ...receivedFonts];
         });
       }
@@ -201,11 +223,12 @@ export default {
       const footer = "</svg>";
       this.renderedSVG = `${header}\n${svgContent}\n${footer}`;
 
+      // wait for next tick when svg has rendered
       this.$nextTick(() => {
-        // wait for next tick when svg has rendered
-        this.setStrokeWeight();
-        this.setFontScale();
         this.resizeSVG();
+        this.smoothFont();
+        // this.setStrokeWeight();
+        // this.setFontScale();
       });
     },
     getSvgElement: function () {
@@ -233,10 +256,32 @@ export default {
       const svgWidth = bbox.x + bbox.width + bbox.x;
       const svgHeight = bbox.y + bbox.height + bbox.y;
 
-      svgElement.setAttribute("width", svgWidth);
-      svgElement.setAttribute("height", svgHeight);
+      svgElement.setAttribute("width", Math.round(svgWidth));
+      svgElement.setAttribute("height", Math.round(svgHeight));
 
       // console.log(this.svgElement)
+    },
+    smoothFont() {
+      const svgElement = this.getSvgElement();
+
+      // feeding the svg into another engine might be slow especially with large text ??
+      paper.setup([
+        svgElement.getAttribute("width"),
+        svgElement.getAttribute("height"),
+      ]);
+
+      paper.project.importSVG(svgElement, (item) => {
+        const letterPaths = item.children[0].children[0].children;
+
+        letterPaths.forEach((path) => {
+          // path.smooth({ type: "continuous" });
+          // path.smooth({ type: "asymmetric" });
+          // path.smooth({ type: 'geometric' })
+          path.smooth({ type: "catmull-rom", factor: 0.5 });
+        });
+      });
+
+      this.renderedSVG = paper.project.exportSVG({ asString: true });
     },
     exportSVG() {
       console.log("export svg");
