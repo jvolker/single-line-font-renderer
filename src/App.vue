@@ -371,7 +371,7 @@ export default {
     },
     exportSVG() {
       console.log("export svg");
-      const string = this.$refs.svgWrapper.firstChild.outerHTML; // raw svg
+      const string = this.$refs.svg.outerHTML; // raw svg
       if (!string) return;
       const blob = new Blob([string], { type: "image/svg+xml;charset=utf-8" });
       const url = window.URL.createObjectURL(blob);
