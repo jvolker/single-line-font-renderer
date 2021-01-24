@@ -266,7 +266,6 @@ export default {
       }
     },
     async selectFont() {
-      // const selectedFont = this.fonts.find(font => font.displayName === this.selectedFontName);
       const path = `${this.selectedFont.basePath}/${this.selectedFont.fileName}`;
       const url = `https://gitlab.com/api/v4/projects/12941474/repository/files/${encodeURIComponent(
         path
@@ -275,7 +274,6 @@ export default {
         .get(url)
         .then((response) => {
           const fontName = svgFontRenderer.addSVGFontFromData(response.data);
-          // this.$set(selectedFont, 'fontData',response.data);
           this.$set(this.selectedFont, "fontName", fontName);
         })
         .then(this.render);
@@ -296,7 +294,6 @@ export default {
       });
     },
     applyFontSettings(triggerSmoothing = true) {
-      // console.log("applyFontSettings")
       const applyDomSettings = () => {
         this.applyStrokeWeight();
         this.applyFontScale();
@@ -329,7 +326,6 @@ export default {
       }
     },
     smoothFont(callback) {
-      // console.log("smooth font")
       if (
         !this.rawSVGWidth ||
         !this.rawSVGHeight ||
@@ -344,7 +340,6 @@ export default {
       const header = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" >`;
       const footer = "</svg>";
 
-      // console.log(this.rawSvgContent);
       paper.project.importSVG(
         `${header}\n${this.rawSvgContent}\n${footer}`,
         (item) => {
