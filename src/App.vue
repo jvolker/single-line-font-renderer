@@ -348,16 +348,19 @@ export default {
       paper.project.importSVG(
         `${header}\n${this.rawSvgContent}\n${footer}`,
         (item) => {
-          if (!this.enableFontSimplification && !this.enableFontSmoothing) return;
+          if (!this.enableFontSimplification && !this.enableFontSmoothing)
+            return;
 
           const letterPaths = item.children[0].children[0].children;
 
           letterPaths.forEach((path) => {
-            if (this.enableFontSimplification) path.simplify(this.simplifyFactor);
-            if (this.enableFontSmoothing) path.smooth({
-              type: this.smoothingType,
-              factor: this.smoothingFactor,
-            });
+            if (this.enableFontSimplification)
+              path.simplify(this.simplifyFactor);
+            if (this.enableFontSmoothing)
+              path.smooth({
+                type: this.smoothingType,
+                factor: this.smoothingFactor,
+              });
           });
         }
       );
