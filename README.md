@@ -8,7 +8,7 @@ These machines require a different single line font type than the more commonly 
 
 This tool is an attempt to create a browser based alternative to the excellent [Hershey Text Extension for Inkscape](https://wiki.evilmadscientist.com/Hershey_Text) by Evil Mad Scientist. It has a simplified interface and doesn't require installation. On the other hand its feature set is currently more limited.
 
-[**CHECK IT OUT HERE**](https://jvolker.github.io/svg-font-renderer/)
+[** >> CHECK IT OUT HERE << **](https://jvolker.github.io/svg-font-renderer/)
 
 **Features:**
 - uses latest fonts from the [SVG fonts repository](https://gitlab.com/oskay/svg-fonts)
@@ -16,12 +16,12 @@ This tool is an attempt to create a browser based alternative to the excellent [
 - export as SVG file
 
 **Ideas for furture features:**
-[ ] smoothing
-[ ] line breaks
-[ ] import local svg font files
-[ ] support for otf/ttf files: some single-line fonts are set in these types and hard to use in other software
-[ ] text area: words wrap to new line when longer than a certain length
-[ ] alignment: center and right
+- [ ] smoothing
+- [ ] line breaks
+- [ ] import local svg font files
+- [ ] support for otf/ttf files: some single-line fonts are set in these types and hard to use in other software
+- [ ] text area: words wrap to new line when longer than a certain length
+- [ ] alignment: center and right
 
 ## Export and usage
 
