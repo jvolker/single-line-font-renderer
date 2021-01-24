@@ -30,14 +30,15 @@
               v-model="selectedFontName"
               @input="selectFont"
             ></v-select>
+
             <div>
-              <v-subheader>Font Scale</v-subheader>
+              <v-subheader>Scale</v-subheader>
               <v-slider
-                @input="setFontScale"
+                @input="applyFontScale"
                 v-model="fontScale"
                 step="0.01"
-                max="1"
-                min="0.01"
+                max="10"
+                min="0.1"
                 block
               >
                 <template v-slot:append>
@@ -55,11 +56,11 @@
             <div>
               <v-subheader>Stroke width</v-subheader>
               <v-slider
-                @input="setStrokeWeight"
+                @input="applyStrokeWeight"
                 v-model="strokeWeight"
-                step="0.1"
-                max="50"
-                min="0.05"
+                step="0.01"
+                max="20"
+                min="0.1"
               >
                 <template v-slot:append>
                   <v-text-field
@@ -73,25 +74,42 @@
               </v-slider>
             </div>
             <div>
-              <v-subheader>Font smoothing</v-subheader>
+              <v-checkbox
+                @change="applyFontSettings(true)"
+                v-model="enableFontSmoothing"
+                label="Smoothing"
+                dense
+                class="ma-0"
+              ></v-checkbox>
 
-              <!-- <v-slider
-                @input="setStrokeWeight"
-                v-model="strokeWeight"
-                step="0.1"
-                max="50"
-                min="0.05"
-              >
-                <template v-slot:append>
-                  <v-text-field
-                    v-model="strokeWeight"
-                    class="mt-0 pt-0"
-                    type="number"
-                    style="width: 45px"
-                    dense
-                  ></v-text-field>
-                </template>
-              </v-slider> -->
+              <v-select
+                v-if="enableFontSmoothing"
+                @input="applyFontSettings(true)"
+                :items="smoothingTypes"
+                label="Smoothing Type"
+                v-model="smoothingType"
+              ></v-select>
+
+              <div v-if="enableFontSmoothing && smoothingType == 'catmull-rom'">
+                <v-subheader>Smoothing amount</v-subheader>
+                <v-slider
+                  @input="applyFontSettings(true)"
+                  v-model="smoothingFactor"
+                  step="0.01"
+                  max="1"
+                  min="0.01"
+                >
+                  <template v-slot:append>
+                    <v-text-field
+                      v-model="smoothingFactor"
+                      class="mt-0 pt-0"
+                      type="number"
+                      style="width: 45px"
+                      dense
+                    ></v-text-field>
+                  </template>
+                </v-slider>
+              </div>
             </div>
             <v-btn block elevation="2" @click="exportSVG">Download SVG</v-btn>
           </v-list-item-content>
@@ -119,7 +137,15 @@
       ><v-container fill-height fluid>
         <v-row align="center" justify="center">
           <v-col>
-            <div ref="svgWrapper" v-html="renderedSVG"></div>
+            <svg
+              ref="svg"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+              version="1.1"
+              v-html="displayedSvgContent"
+              :width="svgWidth"
+              :height="svgHeight"
+            ></svg>
           </v-col> </v-row
       ></v-container>
     </v-content>
@@ -153,9 +179,19 @@ export default {
     return {
       fonts: [],
       selectedFontName: null,
-      strokeWeight: 20,
-      fontScale: 0.1,
+      strokeWeight: 1,
+      fontScale: 1,
+      enableFontSmoothing: false,
+      smoothingTypes: ["catmull-rom", "geometric", "continuous", "asymmetric"],
+      smoothingType: "catmull-rom",
+      smoothingFactor: 0.5,
       right: null,
+      rawSvgContent: null,
+      displayedSvgContent: null,
+      svgWidth: null,
+      svgHeight: null,
+      rawSVGWidth: null,
+      rawSVGHeight: null,
       text:
         "The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through.",
       renderedSVG: null,
@@ -213,75 +249,92 @@ export default {
         .then(this.render);
     },
     render() {
-      const svgContent = svgFontRenderer.renderTextSVG(this.text, {
-        font: this.selectedFont.fontName,
-        scale: 0.1,
-      });
+      this.displayedSvgContent = this.rawSvgContent = svgFontRenderer.renderTextSVG(
+        this.text,
+        {
+          font: this.selectedFont.fontName,
+          scale: 0.1,
+        }
+      );
 
-      const header =
-        '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" >';
-      const footer = "</svg>";
-      this.renderedSVG = `${header}\n${svgContent}\n${footer}`;
+      this.getSVGSize(true);
 
       // wait for next tick when svg has rendered
       this.$nextTick(() => {
-        this.resizeSVG();
-        this.smoothFont();
-        // this.setStrokeWeight();
-        // this.setFontScale();
+        this.applyFontSettings();
       });
     },
-    getSvgElement: function () {
-      return this.$refs.svgWrapper.firstChild;
+    applyFontSettings(triggerSmoothing = true) {
+      // console.log("applyFontSettings")
+      const applyDomSettings = () => {
+        this.applyStrokeWeight();
+        this.applyFontScale();
+      };
+      if (triggerSmoothing) this.smoothFont(applyDomSettings);
+      else applyDomSettings();
     },
-    setFontScale() {
-      if (!this.getSvgElement()) return;
-      const pathWrapper = this.getSvgElement().getElementById("text");
-      pathWrapper.setAttribute("transform", `scale(${this.fontScale})`);
+    applyFontScale() {
+      if (!this.$refs.svg) return;
 
-      this.resizeSVG();
+      const fontWrapper = this.$refs.svg.firstChild;
+      fontWrapper.setAttribute("transform", `scale(${this.fontScale})`);
+
+      this.getSVGSize();
     },
-    setStrokeWeight() {
-      const paths = this.getSvgElement().getElementsByTagName("path");
-      paths.forEach((path) =>
-        path.setAttribute("stroke-width", this.strokeWeight)
-      );
+    applyStrokeWeight() {
+      if (!this.$refs.svg) return;
+      const fontWrapper = this.$refs.svg.firstChild;
+      fontWrapper.setAttribute("stroke-width", this.strokeWeight);
     },
-    resizeSVG() {
-      // Get the bounds of the SVG content
-      const svgElement = this.getSvgElement();
-      const bbox = svgElement.getBBox();
+    getSVGSize(raw = false) {
+      const bbox = this.$refs.svg.getBBox();
 
       // Update the width and height using the size of the contents
-      const svgWidth = bbox.x + bbox.width + bbox.x;
-      const svgHeight = bbox.y + bbox.height + bbox.y;
-
-      svgElement.setAttribute("width", Math.round(svgWidth));
-      svgElement.setAttribute("height", Math.round(svgHeight));
-
-      // console.log(this.svgElement)
+      this.svgWidth = Math.ceil(bbox.x + bbox.width + bbox.x);
+      this.svgHeight = Math.ceil(bbox.y + bbox.height + bbox.y);
+      if (raw) {
+        this.rawSVGWidth = this.svgWidth;
+        this.rawSVGHeight = this.svgHeight;
+      }
     },
-    smoothFont() {
-      const svgElement = this.getSvgElement();
+    smoothFont(callback) {
+      // console.log("smooth font")
+      if (
+        !this.rawSVGWidth ||
+        !this.rawSVGHeight ||
+        this.rawSVGWidth == 0 ||
+        this.rawSVGHeight == 0
+      )
+        return;
 
       // feeding the svg into another engine might be slow especially with large text ??
-      paper.setup([
-        svgElement.getAttribute("width"),
-        svgElement.getAttribute("height"),
-      ]);
+      paper.setup([this.rawSVGWidth, this.rawSVGHeight]);
 
-      paper.project.importSVG(svgElement, (item) => {
-        const letterPaths = item.children[0].children[0].children;
+      const header = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" >`;
+      const footer = "</svg>";
 
-        letterPaths.forEach((path) => {
-          // path.smooth({ type: "continuous" });
-          // path.smooth({ type: "asymmetric" });
-          // path.smooth({ type: 'geometric' })
-          path.smooth({ type: "catmull-rom", factor: 0.5 });
-        });
+      // console.log(this.rawSvgContent);
+      paper.project.importSVG(
+        `${header}\n${this.rawSvgContent}\n${footer}`,
+        (item) => {
+          if (!this.enableFontSmoothing) return;
+
+          const letterPaths = item.children[0].children[0].children;
+
+          letterPaths.forEach((path) => {
+            path.smooth({
+              type: this.smoothingType,
+              factor: this.smoothingFactor,
+            });
+          });
+        }
+      );
+
+      this.displayedSvgContent = paper.project.exportSVG().innerHTML;
+
+      this.$nextTick(() => {
+        if (callback) callback();
       });
-
-      this.renderedSVG = paper.project.exportSVG({ asString: true });
     },
     exportSVG() {
       console.log("export svg");
