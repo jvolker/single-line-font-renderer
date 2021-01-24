@@ -6,7 +6,7 @@
           <v-list-item-title class="title">
             SVG Font Renderer
           </v-list-item-title>
-          <v-list-item-subtitle> subtext </v-list-item-subtitle>
+          <!-- <v-list-item-subtitle> subtext </v-list-item-subtitle> -->
         </v-list-item-content>
       </v-list-item>
 
