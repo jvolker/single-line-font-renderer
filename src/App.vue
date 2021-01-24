@@ -77,7 +77,7 @@
               <v-checkbox
                 @change="applyFontSettings(true)"
                 v-model="enableFontSimplification"
-                label="Simplification"
+                label="Simplification (experimental)"
                 dense
                 class="ma-0"
               ></v-checkbox>
@@ -106,7 +106,7 @@
               <v-checkbox
                 @change="applyFontSettings(true)"
                 v-model="enableFontSmoothing"
-                label="Smoothing"
+                label="Smoothing (experimental)"
                 dense
                 class="ma-0"
               ></v-checkbox>
@@ -212,7 +212,7 @@ export default {
       strokeWeight: 1,
       fontScale: 1,
       enableFontSimplification: false,
-      simplifyFactor: 10,
+      simplifyFactor: 0,
       enableFontSmoothing: false,
       smoothingTypes: ["catmull-rom", "geometric", "continuous", "asymmetric"],
       smoothingType: "catmull-rom",
