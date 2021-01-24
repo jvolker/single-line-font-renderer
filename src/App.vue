@@ -160,11 +160,9 @@ export default {
       await getFontList("fonts/Hershey");
 
       async function getFontList(basePath) {
-        const baseURL =
-          "https://gitlab.com/api/v4/projects/12941474/repository/tree?path=";
-
-        await axios.get(baseURL + basePath).then((response) => {
-          const receivedFonts = response.data.map((font) => {
+        const url = `https://gitlab.com/api/v4/projects/12941474/repository/tree?path=${basePath}&per_page=100`;
+        await axios.get(url).then((response) => {
+            const receivedFonts = response.data.map((font) => {
             return {
               fileName: font.name,
               displayName: font.name.replace(".svg", ""),
