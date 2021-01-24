@@ -289,10 +289,9 @@ export default {
         }
       );
 
-      this.getSVGSize(true);
-
       // wait for next tick when svg has rendered
       this.$nextTick(() => {
+        this.getSVGSize(true);
         this.applyFontSettings();
       });
     },
