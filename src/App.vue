@@ -16,8 +16,7 @@
         <v-list-item>
           <v-list-item-content>
             <v-textarea
-              name="input-7-1"
-              label="Input text"
+              label="Input"
               v-model="text"
               @input="render"
               outlined
@@ -77,12 +76,12 @@
               <v-checkbox
                 @change="applyFontSettings(true)"
                 v-model="enableFontSimplification"
-                label="Simplification (experimental)"
+                label="Simplify (experimental)"
                 dense
                 class="ma-0"
               ></v-checkbox>
               <div v-if="enableFontSimplification">
-                <v-subheader>Simplification Deviation</v-subheader>
+                <v-subheader>Simplify Deviation</v-subheader>
                 <v-slider
                   @input="applyFontSettings(true)"
                   v-model="simplifyFactor"
@@ -106,7 +105,7 @@
               <v-checkbox
                 @change="applyFontSettings(true)"
                 v-model="enableFontSmoothing"
-                label="Smoothing (experimental)"
+                label="Smooth (experimental)"
                 dense
                 class="ma-0"
               ></v-checkbox>
@@ -115,12 +114,12 @@
                 v-if="enableFontSmoothing"
                 @input="applyFontSettings(true)"
                 :items="smoothingTypes"
-                label="Smoothing Type"
+                label="Smooth Type"
                 v-model="smoothingType"
               ></v-select>
 
               <div v-if="enableFontSmoothing && smoothingType == 'catmull-rom'">
-                <v-subheader>Smoothing amount</v-subheader>
+                <v-subheader>Smooth amount</v-subheader>
                 <v-slider
                   @input="applyFontSettings(true)"
                   v-model="smoothingFactor"
@@ -141,7 +140,9 @@
               </div>
             </div>
 
-            <v-btn block elevation="2" @click="exportSVG">Download SVG</v-btn>
+            <v-btn color="primary" block elevation="2" @click="exportSVG"
+              >Download SVG</v-btn
+            >
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -152,14 +153,14 @@
           plain
           href="https://gitlab.com/oskay/svg-fonts"
           target="_blank"
-          ><v-icon left> mdi-pencil </v-icon>Improve these fonts</v-btn
+          >Improve these fonts<v-icon right> mdi-pencil </v-icon></v-btn
         >
         <v-btn
           large
           plain
           href="https://github.com/jvolker/svg-font-renderer"
           target="_blank"
-          ><v-icon left> mdi-pencil </v-icon>Improve this tool</v-btn
+          >Improve this tool<v-icon right> mdi-pencil </v-icon></v-btn
         >
       </template>
     </v-navigation-drawer>
