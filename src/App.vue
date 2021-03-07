@@ -158,7 +158,7 @@
         <v-btn
           large
           plain
-          href="https://github.com/jvolker/svg-font-renderer"
+          href="https://github.com/jvolker/single-line-font-renderer"
           target="_blank"
           >Improve this tool<v-icon right> mdi-pencil </v-icon></v-btn
         >
