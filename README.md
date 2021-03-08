@@ -51,7 +51,8 @@ Thanks to [Evil Mad Scientist](https://www.evilmadscientist.com/) for their pion
 
 ## Alternatives to this tool
 - [Hershey Text Extension for Inkscape](https://wiki.evilmadscientist.com/Hershey_Text) by Evil Mad Scientist
-- [CNC Text Tool](msurguy.github.io/cnc-text-tool/)
+- [CNC Text Tool](https://msurguy.github.io/cnc-text-tool/)
+- [True single-stroke-font text creator](https://www.templatemaker.nl/singlelinetext/)
 
 ## Development
 
