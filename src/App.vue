@@ -31,7 +31,6 @@
               
               <v-row class="mx-0 my-4">
                 <v-btn-toggle
-                  v-model="toggle_exclusive"
                   mandatory
                   small
                 >
@@ -346,7 +345,14 @@ export default {
         const fontName = svgFontRenderer.addSVGFontFromData(reader.result);
         if (fontName){
           this.error = false;
-          this.$set(this.selectedFont, "fontName", fontName);
+          const font = {
+            // fileName: file.name,
+            displayName: svgFontRenderer.getFontData(fontName).info['font-family'],
+            // basePath: basePath
+          }
+          this.fonts.push(font);
+          this.selectedFontName = font.displayName;
+          this.$set(this.selectedFont, "fontName", fontName);              
           this.render();
         } else {
           this.error = true;
