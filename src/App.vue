@@ -21,22 +21,53 @@
               @input="render"
               outlined
             ></v-textarea>
-            <v-select
-              :items="fonts"
-              item-text="displayName"
-              label="Font"
-              dense
-              v-model="selectedFontName"
-              @input="selectFont"
-            ></v-select>
 
-            <v-file-input
-              accept=".svg"
-              v-model="localFontInput"
-              label="Local SVG font file"
-              @change="loadLocalFont"
-            ></v-file-input>
+            <v-container class="font pa-0 mb-8">
+              <v-subheader class="mb-2">Font</v-subheader>
 
+              <v-row class="mx-0 my-2">
+               {{ selectedFontName }}
+              </v-row>
+              
+              <v-row class="mx-0 my-4">
+                <v-btn-toggle
+                  v-model="toggle_exclusive"
+                  mandatory
+                  small
+                >
+                  <v-btn small @click="useCustomFont = false">
+                    <v-icon small >mdi-format-list-bulleted</v-icon> 
+                  </v-btn>
+                  <v-btn small @click="useCustomFont = true">
+                    <v-icon small >mdi-paperclip</v-icon>
+                  </v-btn>
+                </v-btn-toggle>
+              </v-row>
+
+              <template v-if="!useCustomFont">
+                <v-subheader class="mb-2">Default fonts</v-subheader>
+                <v-select
+                  class="mt-1"
+                  :items="fonts"
+                  item-text="displayName"
+                  dense
+                  v-model="selectedFontName"
+                  @input="selectFont"
+                ></v-select>
+              </template>
+              <template v-else>
+                <v-subheader class="mb-2">Load custom SVG font file</v-subheader>
+                <v-file-input
+                  class="mt-1 pt-0"
+                  accept=".svg"
+                  dense
+                  single-line
+                  v-model="customFontInput"
+                  label="Select file …"
+                  @change="loadLocalFont"
+                ></v-file-input>
+              </template>
+            </v-container>
             <div>
               <v-subheader>Scale</v-subheader>
               <v-slider
@@ -231,7 +262,8 @@ export default {
     return {
       fonts: [],
       selectedFontName: null,
-      localFontInput: null,
+      useCustomFont: false,
+      customFontInput: null,
       strokeWeight: 1,
       fontScale: 1,
       enableFontSimplification: false,
@@ -318,7 +350,7 @@ export default {
           this.render();
         } else {
           this.error = true;
-          this.localFontInput = null;
+          this.customFontInput = null;
           this.reset();
         }
 
@@ -453,5 +485,9 @@ div.v-slider--horizontal {
 
 #alerts {
   position: absolute;
+}
+
+.font .v-text-field__details {
+  display: none;
 }
 </style>
