@@ -171,8 +171,17 @@
         >
       </template>
     </v-navigation-drawer>
-    <v-content
-      ><v-container fill-height fluid id="svgWrapper">
+    <v-main>
+      <v-container id="alerts">
+        <v-row class="mt-2" align="center" justify="center">
+          <v-alert
+            v-model="error"
+            dismissible
+            type="error"
+          >Couldn't load local font file.</v-alert>
+        </v-row>
+      </v-container>
+      <v-container fill-height fluid id="svgWrapper">
         <v-row align="center" justify="center">
           <v-col>
             <svg
@@ -184,9 +193,10 @@
               :width="svgWidth"
               :height="svgHeight"
             ></svg>
-          </v-col> </v-row
-      ></v-container>
-    </v-content>
+          </v-col> 
+        </v-row>
+      </v-container>
+    </v-main>
   </v-app>
 </template>
 
@@ -240,6 +250,7 @@ export default {
       text:
         "The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through.",
       renderedSVG: null,
+      error: null
     };
   },
   mounted: async function () {
@@ -302,9 +313,11 @@ export default {
       reader.onload = () => {
         const fontName = svgFontRenderer.addSVGFontFromData(reader.result);
         if (fontName){
+          this.error = false;
           this.$set(this.selectedFont, "fontName", fontName);
           this.render();
         } else {
+          this.error = true;
           this.localFontInput = null;
           this.reset();
         }
@@ -436,5 +449,9 @@ div.v-slider--horizontal {
 
 #svgWrapper {
   overflow: scroll;
+}
+
+#alerts {
+  position: absolute;
 }
 </style>
