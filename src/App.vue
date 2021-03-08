@@ -310,7 +310,7 @@ export default {
             .map((file) => {
               return {
                 fileName: file.name,
-                displayName: file.name.replace(".svg", "").replace(/([a-z])([A-Z])/g, '$1 $2').replace(/([A-Z])([A-Z][a-z])/g, '$1 $2'),
+                displayName: file.name.replace(".svg", "").replace(/([a-z])([A-Z])/g, '$1 $2').replace(/([A-Z])([A-Z][a-z])/g, '$1 $2'), // Need to use file name instead of font-family as we don't want to load and parse all files at once. Might me something for the future. 
                 basePath: basePath,
               };
             })
