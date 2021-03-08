@@ -263,6 +263,7 @@ export default {
       selectedFontName: null,
       useCustomFont: false,
       customFontInput: null,
+      customFont: null,
       strokeWeight: 1,
       fontScale: 1,
       enableFontSimplification: false,
@@ -349,10 +350,11 @@ export default {
             // fileName: file.name,
             displayName: svgFontRenderer.getFontData(fontName).info['font-family'],
             // basePath: basePath
+            fontName : fontName
           }
-          this.fonts.push(font);
+          // this.fonts.push(font);
           this.selectedFontName = font.displayName;
-          this.$set(this.selectedFont, "fontName", fontName);              
+          this.customFont = font;
           this.render();
         } else {
           this.error = true;
@@ -366,7 +368,7 @@ export default {
       this.displayedSvgContent = this.rawSvgContent = svgFontRenderer.renderTextSVG(
         this.text,
         {
-          font: this.selectedFont.fontName,
+          font: this.useCustomFont && this.customFont?.fontName? this.customFont.fontName : this.selectedFont.fontName,
           scale: 0.1,
         }
       );
