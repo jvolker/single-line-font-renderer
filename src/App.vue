@@ -349,6 +349,7 @@ export default {
     async loadLocalFont(file) {
       if (!file) { 
         // reset to default font after ejecting local font
+        this.customFont = null;
         this.reset();
         return;
       } 
