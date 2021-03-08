@@ -30,6 +30,13 @@
               @input="selectFont"
             ></v-select>
 
+            <v-file-input
+              accept=".svg"
+              v-model="localFontInput"
+              label="Local SVG font file"
+              @change="loadLocalFont"
+            ></v-file-input>
+
             <div>
               <v-subheader>Scale</v-subheader>
               <v-slider
@@ -203,6 +210,10 @@ function truncate(str, n) {
   return str.length > n ? str.substr(0, n - 1) : str;
 }
 
+const defaults = {
+  selectedFontName : "HersheySans1"
+}
+
 export default {
   name: "App",
 
@@ -210,6 +221,7 @@ export default {
     return {
       fonts: [],
       selectedFontName: null,
+      localFontInput: null,
       strokeWeight: 1,
       fontScale: 1,
       enableFontSimplification: false,
@@ -232,9 +244,7 @@ export default {
   },
   mounted: async function () {
     await this.getFonts();
-    this.selectedFontName = "HersheySans1";
-    await this.selectFont();
-    this.render();
+    this.reset();
   },
   computed: {
     selectedFont: function () {
@@ -278,6 +288,28 @@ export default {
           this.$set(this.selectedFont, "fontName", fontName);
         })
         .then(this.render);
+    },
+    async loadLocalFont(file) {
+      if (!file) { 
+        // reset to default font after ejecting local font
+        this.reset();
+        return;
+      } 
+
+      const reader = new FileReader();
+      reader.readAsText(file);
+
+      reader.onload = () => {
+        const fontName = svgFontRenderer.addSVGFontFromData(reader.result);
+        if (fontName){
+          this.$set(this.selectedFont, "fontName", fontName);
+          this.render();
+        } else {
+          this.localFontInput = null;
+          this.reset();
+        }
+
+      };
     },
     render() {
       this.displayedSvgContent = this.rawSvgContent = svgFontRenderer.renderTextSVG(
@@ -381,7 +413,11 @@ export default {
       a.click();
       window.URL.revokeObjectURL(url);
     },
-    reset() {},
+    async reset() {    
+      this.selectedFontName = defaults.selectedFontName;
+      await this.selectFont();
+      this.render();
+    },
   },
 };
 </script>

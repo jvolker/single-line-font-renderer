@@ -13,7 +13,8 @@ This tool is an attempt to create a browser based alternative to the excellent [
 <img width="1136" alt="Screenshot of the software" src="https://user-images.githubusercontent.com/546852/105638363-85436000-5e72-11eb-801a-60d2b2ce9a65.png">
 
 **Features:**
-- uses latest fonts from the [SVG fonts repository](https://gitlab.com/oskay/svg-fonts)
+- latest fonts from the [SVG fonts repository](https://gitlab.com/oskay/svg-fonts) are loaded by default
+- local SVG font files can be loaded optionally
 - adjust font scale and stroke width 
 - smoothing/simplification (this is experimental: the results from Inkscape are better in some cases)
 - export as SVG file
@@ -21,7 +22,6 @@ This tool is an attempt to create a browser based alternative to the excellent [
 **Ideas for furture features:**
 - [ ] line breaks
 - [ ] Use meaningful units: eg. font size and stroke width in mm
-- [ ] import local svg font files
 - [ ] support for otf/ttf files (eg. using https://github.com/opentypejs/opentype.js): some single-line fonts are set in these types and hard to use in other software
 - [ ] DXF export (eg. using https://github.com/microsoft/maker.js/issues/480 or https://github.com/jscad/io/tree/master/packages/svg-deserializer and https://github.com/jscad/io/tree/master/packages/dxf-serializer)
 - [ ] move svg font renderer into separate repo with Node.js support and NPM release 
