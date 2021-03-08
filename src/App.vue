@@ -16,35 +16,21 @@
         <v-list-item>
           <v-list-item-content>
             <v-textarea
-              label="Input"
+              label="Text input"
               v-model="text"
               @input="render"
               outlined
             ></v-textarea>
 
-            <v-container class="font pa-0 mb-8">
+            <v-container class="font pa-0 mb-4">
               <v-subheader class="mb-2">Font</v-subheader>
 
-              <v-row class="mx-0 my-2">
+              <v-row class="mx-0 mt-2 mb-6">
                {{ selectedFontName }}
               </v-row>
               
-              <v-row class="mx-0 my-4">
-                <v-btn-toggle
-                  mandatory
-                  small
-                >
-                  <v-btn small @click="useCustomFont = false">
-                    <v-icon small >mdi-format-list-bulleted</v-icon> 
-                  </v-btn>
-                  <v-btn small @click="useCustomFont = true">
-                    <v-icon small >mdi-paperclip</v-icon>
-                  </v-btn>
-                </v-btn-toggle>
-              </v-row>
-
               <template v-if="!useCustomFont">
-                <v-subheader class="mb-2">Default fonts</v-subheader>
+                <v-subheader class="mb-1">Default fonts</v-subheader>
                 <v-select
                   class="mt-1"
                   :items="fonts"
@@ -53,6 +39,15 @@
                   v-model="selectedFontName"
                   @input="selectFont"
                 ></v-select>
+                <v-btn
+                  class="pl-0"
+                  x-small
+                  plain
+                  href="https://gitlab.com/oskay/svg-fonts"
+                  target="_blank"
+                  >Improve these fonts<v-icon class="ml-0" x-small right> mdi-pencil </v-icon></v-btn
+                >
+
               </template>
               <template v-else>
                 <v-subheader class="mb-2">Load custom SVG font file</v-subheader>
@@ -66,7 +61,97 @@
                   @change="loadLocalFont"
                 ></v-file-input>
               </template>
+
+              <v-row class="mx-0 mt-2 mb-1" justify="center">
+                <v-btn-toggle
+                  mandatory
+                  small
+                >
+                  <v-btn small @click="useCustomFont = false">
+                    <v-icon small >mdi-format-list-bulleted</v-icon> 
+                  </v-btn>
+                  <v-btn small @click="useCustomFont = true">
+                    <v-icon small >mdi-paperclip</v-icon>
+                  </v-btn>
+                </v-btn-toggle>
+              </v-row>
             </v-container>
+
+            <v-btn v-if="!showFontSmoothing" class="mb-2" small block text @click="showFontSmoothing = true">smoothing (experimental)</v-btn>
+            <template v-else>
+              <div class="mt-2 mb-0">
+                <v-subheader class="mb-2">Smoothing (experimental)</v-subheader>
+
+                <v-checkbox
+                  @change="applyFontSettings(true)"
+                  v-model="enableFontSimplification"
+                  label="Simplify"
+                  dense
+                  class="ma-0"
+                ></v-checkbox>
+                <div v-if="enableFontSimplification">
+                  <v-subheader>Simplify Deviation</v-subheader>
+                  <v-slider
+                    @input="applyFontSettings(true)"
+                    v-model="simplifyFactor"
+                    step="1"
+                    max="30"
+                    min="0"
+                  >
+                    <template v-slot:append>
+                      <v-text-field
+                        v-model="simplifyFactor"
+                        class="mt-0 pt-0"
+                        type="number"
+                        style="width: 45px"
+                        dense
+                      ></v-text-field>
+                    </template>
+                  </v-slider>
+                </div>
+              </div>
+              <div class="mt-0">
+                <v-checkbox
+                  @change="applyFontSettings(true)"
+                  v-model="enableFontSmoothing"
+                  label="Smooth"
+                  dense
+                  class="ma-0"
+                ></v-checkbox>
+
+                <v-select
+                  v-if="enableFontSmoothing"
+                  @input="applyFontSettings(true)"
+                  :items="smoothingTypes"
+                  label="Smooth Type"
+                  v-model="smoothingType"
+                ></v-select>
+
+                <div v-if="enableFontSmoothing && smoothingType == 'catmull-rom'">
+                  <v-subheader>Smooth amount</v-subheader>
+                  <v-slider
+                    @input="applyFontSettings(true)"
+                    v-model="smoothingFactor"
+                    step="0.01"
+                    max="1"
+                    min="0.01"
+                  >
+                    <template v-slot:append>
+                      <v-text-field
+                        v-model="smoothingFactor"
+                        class="mt-0 pt-0"
+                        type="number"
+                        style="width: 45px"
+                        dense
+                      ></v-text-field>
+                    </template>
+                  </v-slider>
+                </div>
+              </div>
+            </template>
+
+            <v-divider class="mt-1 mb-6"></v-divider>
+
             <div>
               <v-subheader>Scale</v-subheader>
               <v-slider
@@ -109,73 +194,8 @@
                 </template>
               </v-slider>
             </div>
-            <div>
-              <v-checkbox
-                @change="applyFontSettings(true)"
-                v-model="enableFontSimplification"
-                label="Simplify (experimental)"
-                dense
-                class="ma-0"
-              ></v-checkbox>
-              <div v-if="enableFontSimplification">
-                <v-subheader>Simplify Deviation</v-subheader>
-                <v-slider
-                  @input="applyFontSettings(true)"
-                  v-model="simplifyFactor"
-                  step="1"
-                  max="30"
-                  min="0"
-                >
-                  <template v-slot:append>
-                    <v-text-field
-                      v-model="simplifyFactor"
-                      class="mt-0 pt-0"
-                      type="number"
-                      style="width: 45px"
-                      dense
-                    ></v-text-field>
-                  </template>
-                </v-slider>
-              </div>
-            </div>
-            <div>
-              <v-checkbox
-                @change="applyFontSettings(true)"
-                v-model="enableFontSmoothing"
-                label="Smooth (experimental)"
-                dense
-                class="ma-0"
-              ></v-checkbox>
 
-              <v-select
-                v-if="enableFontSmoothing"
-                @input="applyFontSettings(true)"
-                :items="smoothingTypes"
-                label="Smooth Type"
-                v-model="smoothingType"
-              ></v-select>
-
-              <div v-if="enableFontSmoothing && smoothingType == 'catmull-rom'">
-                <v-subheader>Smooth amount</v-subheader>
-                <v-slider
-                  @input="applyFontSettings(true)"
-                  v-model="smoothingFactor"
-                  step="0.01"
-                  max="1"
-                  min="0.01"
-                >
-                  <template v-slot:append>
-                    <v-text-field
-                      v-model="smoothingFactor"
-                      class="mt-0 pt-0"
-                      type="number"
-                      style="width: 45px"
-                      dense
-                    ></v-text-field>
-                  </template>
-                </v-slider>
-              </div>
-            </div>
+            <!-- <v-divider class="mt-0 mb-6"></v-divider> -->
 
             <v-btn color="primary" block elevation="2" @click="exportSVG"
               >Download SVG</v-btn
@@ -185,13 +205,6 @@
       </v-list>
       <template v-slot:append>
         <v-divider></v-divider>
-        <v-btn
-          large
-          plain
-          href="https://gitlab.com/oskay/svg-fonts"
-          target="_blank"
-          >Improve these fonts<v-icon right> mdi-pencil </v-icon></v-btn
-        >
         <v-btn
           large
           plain
@@ -266,6 +279,7 @@ export default {
       customFont: null,
       strokeWeight: 1,
       fontScale: 1,
+      showFontSmoothing: false,
       enableFontSimplification: false,
       simplifyFactor: 0,
       enableFontSmoothing: false,
