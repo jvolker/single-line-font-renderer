@@ -343,6 +343,7 @@ export default {
       reader.readAsText(file);
 
       reader.onload = () => {
+        this.customFont = null;
         const fontName = svgFontRenderer.addSVGFontFromData(reader.result);
         if (fontName){
           this.error = false;
