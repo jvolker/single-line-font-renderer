@@ -421,7 +421,7 @@ export default {
       const a = document.createElement("a");
       a.href = url;
       a.download =
-        truncate(this.text.replace(/[^a-z0-9]/gi, "_").toLowerCase(), 100) +
+        truncate(this.text.replace(/[^a-z0-9]/gi, "-").toLowerCase(), 60) +
         ".svg"; // download file name
       a.click();
       window.URL.revokeObjectURL(url);
