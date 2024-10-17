@@ -24,7 +24,7 @@
     "babel-eslint": "10.1.0",
     "eslint": "7.18.0",
     "eslint-plugin-vue": "7.5.0",
-    "sass": "1.32.5",
+    "sass": "1.80.2",
     "sass-loader": "10.1.1",
     "vue-cli-plugin-vuetify": "2.0.9",
     "vue-template-compiler": "2.6.12",
